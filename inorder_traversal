@@ -1,0 +1,16 @@
+// Inorder Traversal
+digraph {
+	1 [label=1]
+	"+" [label="+"]
+	1 -> "+" [style=dotted]
+	"+" -> 3 [style=dotted]
+	3 [label=3]
+	"-" [label="-"]
+	"+" -> "-" [style=dotted]
+	"-" -> "*" [style=dotted]
+	2 [label=2]
+	"*" [label="*"]
+	2 -> "*" [style=dotted]
+	"*" -> 5 [style=dotted]
+	5 [label=5]
+}

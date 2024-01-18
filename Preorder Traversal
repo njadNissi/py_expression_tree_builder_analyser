@@ -1,0 +1,20 @@
+// Inorder Traversal
+digraph {
+	"+" [label="+"]
+	"+" -> "-" [style=dotted]
+	"+" -> "/" [style=dotted]
+	"-" [label="-"]
+	"-" -> 0 [style=dotted]
+	"-" -> 12 [style=dotted]
+	0 [label=0]
+	12 [label=12]
+	"/" [label="/"]
+	"/" -> "*" [style=dotted]
+	"/" -> 7 [style=dotted]
+	"*" [label="*"]
+	"*" -> 34 [style=dotted]
+	"*" -> 56 [style=dotted]
+	34 [label=34]
+	56 [label=56]
+	7 [label=7]
+}
