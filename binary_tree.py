@@ -1,23 +1,23 @@
 from binary_node import BNode
-import conversor as conv
+import exprParser as parser
 
 
 class BTree:
 
     def __init__(self, root: BNode):
         self.root = root
-        self.HEIGHT = self.__height(self.root)
-        self.nodes_dlr = []
-        self.nodes_ldr = []
-        self.nodes_lrd = []
-        self.nodes_layer = []
+        self.__ldr = [] # nodes after preorder traversal
+        self.__ldr = [] # nodes after inorder traversal
+        self.__lrd = [] # nodes after postorder traversal
+        self.__layer = [] # nodes after layerorder traversal
+
     
     @staticmethod
-    def from_postfix(postfix: list) -> BNode:
+    def from_postfix(postfix: list):
         
         tree = BTree(root=BTree.build(postfix))
         
-        return tree.root
+        return tree
 
 
     @classmethod
@@ -26,23 +26,25 @@ class BTree:
 
 
     @staticmethod
-    def from_infix(infix: list) -> BNode:
-
-        tree = BTree(root=BTree.build(infix))
+    def from_infix(infix: list):
         
-        return tree.root
+        tree = BTree(root=BTree.build(parser.infixToPostfix(infix)))
+        
+        return tree
 
 
     def insertLeftChild(self, parent, child):
         parent.left = child
+        self.height = self.__height(self.root)
 
 
     def insertRightChild(self, parent, child):
         parent.right = child
+        self.height = self.__height(self.root)
 
 
-    def delete(Self, node):
-        pass
+    def delete(self, node):
+        self.height = self.__height(self.root)
 
 
     @staticmethod
@@ -54,7 +56,7 @@ class BTree:
             
             node = BNode(e)
             
-            if e in conv.Operators: # an operator case
+            if e in parser.Operators: # an operator case
 
                 node.set_children(rchild=stack.pop(), lchild=stack.pop()) # a root node
 
@@ -63,75 +65,99 @@ class BTree:
         return stack.pop() # the Root of the tree
     
 
-    def DLR(self):
+    """
+        The methods below are called by default while instantiating this class
+        Do call them manually after dynamic operations(insertion, deletion) to updated data
+    """
+    @property
+    def prefix(self):
         """
             First-Order Traversal: 
                 D:root => L:left-child => R:right-chid
         """
-        self.__dlr(self.root)
-        return self.nodes_dlr
+        self.__preorder_traveral(self.root)
+
+        return self.__dlr
 
 
-    def __dlr(self, root):
-        self.nodes_dlr.append(root.data)
+    def __preorder_traveral(self, root):
+
+        self.__dlr.append(root.data)
+
         if root.left != None:
-            self.__dlr(root.left)
+            self.__preorder_traveral(root.left)
         if root.right != None:
-            self.__dlr(root.right)
+            self.__preorder_traveral(root.right)
 
 
-    def LDR(self):
+    @property
+    def infix(self):
         """
             In-Order Traversal: 
                 L:left-child => D:root => R:right-chid
         """
-        return self.__ldr(self.root)
+        self.__inorder_traversal(self.root)
+
+        return self.__ldr
 
 
-    def __ldr(self, root):
+    def __inorder_traversal(self, root):
         if root.left != None:
-            self.__ldr(root.left)
+            self.__inorder_traversal(root.left)
 
-        self.nodes_ldr.append(root.data)
+        self.__ldr.append(root.data)
 
         if root.right != None:
-            self.__ldr(root.right)
-        return self.nodes_ldr
+            self.__inorder_traversal(root.right)
 
-    def LRD(self):
+        return self.__ldr
+
+
+    @property
+    def postfix(self):
         """
             Post-Order Traversal: 
                 L:left-child => R:right-chid => D:root
         """
-        self.__lrd(self.root)
-        return self.nodes_lrd
+        self.__postorder_traversal(self.root)
+
+        return self.__lrd
 
 
-    def __lrd(self, root):
+    def __postorder_traversal(self, root):
         if root.left != None:
-            self.__lrd(root.left)
+            self.__postorder_traversal(root.left)
 
         if root.right != None:
-            self.__lrd(root.right)
+            self.__postorder_traversal(root.right)
 
-        self.nodes_lrd.append(root.data)
-
-
-    def Layer(self):
-        for i in range(1, self.HEIGHT + 1):
-            self.__layer(self.root, i)
-
-        return self.nodes_layer
+        self.__lrd.append(root.data)
 
 
-    def __layer(self, root, level):
+    @property
+    def layers(self):
+        for i in range(1, self.height + 1):
+            self.__layerorder_traversal(self.root, i)
+
+        return self.__layer
+
+
+    def __layerorder_traversal(self, root, level):
+
         if root is None:
             return
+
         if level == 1:
-            self.nodes_layer.append(root)
+            self.__layer.append(root)
+
         else:
-            self.__layer(root.left, level-1)
-            self.__layer(root.right, level-1)
+            self.__layerorder_traversal(root.left, level-1)
+            self.__layerorder_traversal(root.right, level-1)
+
+
+    @property
+    def height(self):
+        return self.__height(self.root)    
 
 
     def __height(self, node: BNode):

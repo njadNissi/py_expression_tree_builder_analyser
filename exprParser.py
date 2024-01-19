@@ -4,13 +4,14 @@ import re
 ExpressionOpeners = ['(', '[', '{']
 ExpressionClosers = [')', ']', '}']
 Operators = ['+', '-', '*', '/', '^']
-Symbols = set(Operators + ExpressionOpeners + ExpressionClosers)  # collection of Operators
+Delimiters = ExpressionOpeners + ExpressionClosers
+Tokens = set(Operators + Delimiters)  # collection of Operators
 Priority = {'+':1, '-':1, '*':2, '/':2, '^':3} # dictionary having priorities of Operators
  
  
-def infixToPostfix(infix): 
+def infixToPostfix(infix: list): 
 
-    infix = parse_infix(infix)
+    # infix = parse_infix(infix)
 
     stack = [] # initialization of empty stack
 
@@ -18,7 +19,7 @@ def infixToPostfix(infix):
 
     for e in infix:
 
-        if e not in Symbols:  # if an operand append in postfix expression
+        if e not in Tokens:  # if an operand append in postfix expression
 
             output.append(e)
 
@@ -63,17 +64,22 @@ def parse_infix(expr: str) -> list:
     for i in range(len(infix)):
         e = infix[i] 
 
-        if e not in Symbols: # an operand
+        if e in ExpressionOpeners: 
+            better_infix.append(e)
+
+        elif e not in Tokens: # an operand: letter or digit
             val += e
 
-        elif e == '-' and (i == 0 or infix[i-1] in ExpressionOpeners):# initial '-' operator
+        elif (e == '-' or e == '+') and (i == 0 or infix[i-1] in ExpressionOpeners):# initial '-' operator
             better_infix += ['0', '-']
     
-        elif e in Operators: # an operator or any symbol
-            better_infix += [val, e]
+        elif e in Tokens: # an symbol not a digit: 12+ or 12) or 12( etc...
+            if val != '': better_infix += [val, e]
+            else: better_infix.append(e)
             val = ''
-    
-    better_infix.append(val) # last val won't have an op behind it so the 'else' statement won't work 
+
+
+    if val != '': better_infix.append(val) # last val won't have an op behind it so the 'else' statement won't work 
 
     print('INFIX: ', better_infix) 
 
